@@ -2,3 +2,5 @@
 MoodleNet installation and tools
 
 This repo is my personal collection on how to manage and run a Moodle Net installation.
+
+* [Installation on a pure Debian/Ubuntu](./install_debian.md)
