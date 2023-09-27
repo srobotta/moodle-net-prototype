@@ -1,9 +1,9 @@
 # Install MoodleNet on a naked Ubuntu/Debian
 
-You can basically copy and paste the command (include the newlines) into a terminal
+You can basically copy and paste the commands (include the newlines) into a terminal
 of your machine. The commands are taken from the linked documentation but stripped to
-the necessary commands only (e.g. no need to purge old docker versions e.g. docker.io)
-because on a minimal OS installation none additional packages or other software should
+the necessary only (e.g. no need to purge old docker versions e.g. docker.io)
+because on a minimal OS installation no additional packages or other software should
 be installed.
 
 ## Docker
@@ -26,10 +26,30 @@ echo \
   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
+```
+**Note**: for Ubuntu please change the link https://download.docker.com/linux/debian/ into
+https://download.docker.com/linux/ubuntu
 
-# Install packages
+Install packages:
+```
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+
 
 ## Node
 
