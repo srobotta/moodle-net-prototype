@@ -44,6 +44,24 @@ own domain. Also add an email address 3 lines below the domain list.
 Once you have a certificate then run `docker-compose up -d` to build the rest of the containers
 and have them started.
 
+### Admin Area
+
+After installing the admin area is password protected. The credentials are located in the
+`data/nginx/.htpasswd` file. You may create new credentials using the following command:
+
+```
+htpasswd -n <username>
+```
+After entering the password on the command line, the output is one line that goes into the
+`.htpasswd` file. To have several users, you can repeat the process with different user names.
+
+If the htpasswd tool is missing on your system, you might install it by
+`sudo apt install apache2-utils`.
+
+There's one problem at the moment that't being discussed: with this setup it's currently
+not possible to save changes to the settings, because from the MoodleNet
+app the POST requests are missing the credentials. 
+
 ## Tweeks
 
 ### Arango DB Webadmin
