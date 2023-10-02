@@ -33,7 +33,12 @@ The machine where you install MoodleNet should have 2GB of RAM and sufficient st
 Once you have installed Docker and nodejs we may start with the setup here to get the containers
 running and MoodleNet installed.
 
-1. Copy the content from the directory `docker_setup` of this repository onto your machine.
+### Application and Docker container
+
+1. Create a new directory in (e.g. the users home directory) where the MoodleNet application
+is installed and holds the data.
+1. Copy the content of the directory `docker_setup` of this repository onto your machine
+into that newly created directory.
 1. Change into the directory so that you are at the same level where the `init-letsencrypt.sh`
 and the `docker-compose.yml` are located.
 1. In the file `ini-letsencrypt.sh` replace *example.org* and *www.example.org* with your
@@ -43,6 +48,115 @@ own domain. Also add an email address 3 lines below the domain list.
 
 Once you have a certificate then run `docker-compose up -d` to build the rest of the containers
 and have them started.
+
+### Systemd Service
+
+For an easier way of starting and stopping the MoodleNet app and especially to have it
+launched automatically when the server is rebooted, a systemd service entry should be
+created.
+
+To have a systemd service link create the file `/etc/system.d/system/moodlenet.service` with
+the following content:
+```
+[Unit]
+Description="MoodleNet"
+
+[Service]
+User=ubuntu
+ExecStart=npm start
+WorkingDirectory=/home/ubuntu/moodlenet
+Restart=always
+RestartSec=5
+#StandardOutput=append:/home/ubuntu/moodlenet-logs/info.log
+#StandardError=append:/home/ubutnu/moodlenet-logs/error.log
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=MoodleNet
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+In this case the user account is *ubuntu* and the MoodleNet application is installed in
+the users home directory into `moodlenet`.
+
+Once you have created the new file for the service, reload the systemd daemon
+to be aware of the new service:
+```
+sudo systemctl daemon-reload
+```
+
+Start MoodleNet:
+```
+sudo systemctl start moodlenet
+```
+Check the status of the service:
+```
+sudo systemctl status moodlenet
+```
+Stop the service by:
+```
+sudo systemctl stop moodlenet
+```
+
+If the MoodleNet service doesn't start for any reason or if you would like to check the
+logs, then do:
+```
+less /var/log/syslog | grep MoodleNet
+```
+
+### E-Mail
+
+MoodleNet wants to send emails, especially when you register yourself, so that you can
+confirm your email address. To do so, edit the `default.config.json` file in the MoodleNet
+installation directory and add/change the email setting to something like this:
+```
+"@moodlenet/email-service": {
+  "nodemailerTransport": {
+      "host": "smtp.example.org",
+      "port": 465,
+      "secure": true,
+      "auth": {
+          "user": "mail@myservice.org",
+          "pass": "somepass"
+      },
+      "logger": true,
+      "debug": true
+  }
+},
+```
+
+Then restart the MoodleNet service (see above) and e.g. sign up a new user. To verify that
+the email sending works you may check the logs.
+```
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG Creating transport: nodemailer (6.6.1; +https://nodemailer.com/; SMTP/6.6.1[client:6.6.1])
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG Sending mail using SMTP/6.6.1[client:6.6.1]
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] Resolved smtp.example.org as XX.XX.XXX.XX [cache hit]
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] INFO  [0czWbf2sJQA] Secure connection established to XX.XX.XXX.XX:465
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 220 smtp.example.org ESMTP ready
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] C: EHLO [127.0.0.1]
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250-smtp.example.org
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250-SIZE 52428800
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250-8BITMIME
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250-PIPELINING
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250-HELP
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 250 AUTH LOGIN
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] SMTP handshake finished
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] C: AUTH LOGIN
+...
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] DEBUG [0czWbf2sJQA] S: 235 2.0.0 OK
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] INFO  [0czWbf2sJQA] User "mail@myservice.org" authenticated
+Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] INFO  Sending message <a3a83f03-31dc-a412-e528-5ded3c24dd06@localhost> to <new.user@somewhere.org>
+```
+The line *User "mail@myservice.org" authenticated* tells us that the authentication was
+successful and mails should be sent. Whether they are received is another issue. In this
+example output it might happen that the mail was received in the spam folder.
+
+Be aware, here I am using port 465. You provider might also use 587 or some other port.
+
+If the mailing works well, the `debug` and `logger` keys in the config might be removed to
+stop logging the mail processing.
 
 ### Admin Area
 
@@ -68,7 +182,7 @@ app the POST requests are missing the credentials.
 
 To access the Agango DB browser backend, create an ssh tunnel from your machine to
 the MoodleNet server like `ssh -NL 8529:localhost:8529 user@moodlenet.server` and
-then navigate in your local machine to http://localhost:8529/
+then in the browser of your local machine navigate to http://localhost:8529/
 
 ### Adapt changes to Nginx
 
@@ -90,8 +204,17 @@ From outside the Nginx container, watch logs by:
 ```
 docker logs <container_id> --follow
 ```
+or without to have the container id:
+```
+docker ps | grep nginx | cut -d \  -f 1 | xargs docker logs --follow
+```
 
 The container id can be obtained from the output of `docker ps`.
+
+**Note**: If you want to keep the changes persistent, you should also change the files
+within the docker setup (the content that was copied from the directory `docker_setup`
+in this repo) so that these changes are included in the setup in case containers are
+rebuilt.
 
 
 
