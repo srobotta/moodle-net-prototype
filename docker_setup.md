@@ -127,6 +127,13 @@ installation directory and add/change the email setting to something like this:
 },
 ```
 
+If you prefer the SMTP string you would do:
+```
+"@moodlenet/email-service": {
+  "nodemailerTransport": "smtps://mail%40myservice.org:password@smtp.example.org/"
+},
+```
+
 Then restart the MoodleNet service (see above) and e.g. sign up a new user. To verify that
 the email sending works you may check the logs.
 ```
@@ -151,9 +158,10 @@ Oct  2 09:55:26 moodlenet3 MoodleNet[99545]: [2023-10-02 09:55:26] INFO  Sending
 ```
 The line *User "mail@myservice.org" authenticated* tells us that the authentication was
 successful and mails should be sent. Whether they are received is another issue. In this
-example output it might happen that the mail was received in the spam folder.
+example output it might happen that the mail was received in the spam folder because the from
+address was not setup properly.
 
-Be aware, here I am using port 465. You provider might also use 587 or some other port.
+Be aware, here I am using port 465. Your provider might use 587 or some other port.
 
 If the mailing works well, the `debug` and `logger` keys in the config might be removed to
 stop logging the mail processing.
@@ -174,7 +182,17 @@ If the htpasswd tool is missing on your system, you might install it by
 
 There's one problem at the moment that't being discussed: with this setup it's currently
 not possible to save changes to the settings, because from the MoodleNet
-app the POST requests are missing the credentials. 
+app the POST requests are missing the credentials.
+
+The workaround/solution is to follow the steps
+[described in the docs](https://docs.moodle.org/dev/MoodleNet#Default_authentication_system)
+or in short here:
+1. Create a new user (self signup)
+2. Confirm that user by clicking the confirmation link in the email. If no email is received, 
+enable logging and fetch the confirmation link from the logs.
+3. Login as admin via *\<domain>/root/login* (password is in the `default.config.json` in
+the key *@moodlenet/system-entities* -> *rootPassword*)
+4. In the users list make that user an admin by clicking the icon.
 
 ## Tweeks
 
