@@ -190,7 +190,7 @@ or in short here:
 1. Create a new user (self signup)
 2. Confirm that user by clicking the confirmation link in the email. If no email is received, 
 enable logging and fetch the confirmation link from the logs.
-3. Login as admin via *\<domain>/root/login* (password is in the `default.config.json` in
+3. Login as admin via *\<domain>/login/root* (password is in the `default.config.json` in
 the key *@moodlenet/system-entities* -> *rootPassword*)
 4. In the users list make that user an admin by clicking the icon.
 
