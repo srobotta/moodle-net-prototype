@@ -19,7 +19,6 @@ services:
     container_name: mn-nginx-rv-proxy
     ports:
       - "80:80"
-      - "443:443"
     networks:
       - mn-network
     volumes:

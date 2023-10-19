@@ -1,6 +1,6 @@
 # Setup MoodleNet for a development environment
 
-The deveopment environment follows much like the
+The development environment follows much like the
 [setup for the production environment](docker_setup.md). The main difference
 is building the MoodleNet application itself.
 
@@ -15,13 +15,13 @@ complicated setup with building the app inside the container.
 
 The dev environment uses these three docker containers:
 
-* Arango DB
-* Nginx Reverse Proxy that handles connections on port 80 and 443
-* Mailpit to simulate emails sending
+* [Arango DB](https://hub.docker.com/_/arangodb)
+* Nginx Reverse Proxy that handles connections on port 80
+* [Mailpit](https://hub.docker.com/r/axllent/mailpit) to simulate emails sending
 
 ## Requisites
 
-Before your start, you should have server running with docker and nodejs installed.
+Before your start, you should have your machine running with docker and nodejs installed.
 
 To get the dev machine ready to start, follow the guide 
 [Install MoodleNet on a naked Ubuntu/Debian](./install_debian.md) excluding
@@ -54,7 +54,8 @@ running containers.
 
 ### MoodleNet Code
 
-Somewhere on your machine checkout the MoodleNet project via git:
+Somewhere on your machine checkout the
+[MoodleNet project](https://github.com/moodle/moodlenet) via git:
 ```
 git clone git@github.com:moodle/moodlenet.git
 ```
@@ -74,8 +75,8 @@ npm run dev-install-backend my-dev
 Once this is done, the newly created `.dev-machines/my-dev/default.config.json`
 needs to be changed:
 
-- Build the webserver as well.
-- Adapt the mail settings to use mailpit
+- Build the web application as well.
+- Adapt the mail settings to use mailpit.
 - Change the hostname to oer.local although this is not necessarily required.
 
 Apply the changes from the patch file `config.json.patch` manually or run
@@ -99,7 +100,8 @@ To test the emails sent from MoodleNet we have the mailpit container running.
 All mails that are send from MoodleNet (see config above) are send via
 localhost:1025 which is the SMTP port provided via the docker container.
 
-The mails can be checked using the webfrontend of mailpit which is accessible
+The mails can be checked using the webfrontend of
+[mailpit](https://github.com/axllent/mailpit) which is accessible
 at http://localhost:8025.
 
 ## Tweeks
