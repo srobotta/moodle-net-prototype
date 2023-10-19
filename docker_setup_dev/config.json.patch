@@ -1,0 +1,15 @@
+5c5
+<       "instanceDomain": "http://localhost:8080",
+---
+>       "instanceDomain": "http://oer.local",
+39c39,42
+<         "jsonTransport": true
+---
+>         "host": "127.0.0.1",
+>         "port": 1025,
+>         "logger": true,
+>         "debug": true
+46c49
+<       "noWebappServer": true,
+---
+>       "noWebappServer": false,

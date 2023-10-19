@@ -1,0 +1,42 @@
+version: '3.5'
+
+services:
+
+  arangodb:
+    image: arangodb
+    container_name: mn-arangodb
+    environment:
+      ARANGO_NO_AUTH: '1'
+      nolink: '1'
+    ports:
+      - "8529:8529"
+    volumes:
+      - ./storage/db:/var/lib/arangodb3
+      - ./storage/db-apps:/var/lib/arangodb3-apps
+
+  nginx:
+    image: nginx:1.15-alpine
+    container_name: mn-nginx-rv-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - mn-network
+    volumes:
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./storage/uploads:/var/www/upload
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mn-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - mn-network
+
+networks:
+  mn-network:
+    name: mn-network
