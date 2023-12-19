@@ -55,7 +55,7 @@ For an easier way of starting and stopping the MoodleNet app and especially to h
 launched automatically when the server is rebooted, a systemd service entry should be
 created.
 
-To have a systemd service link create the file `/etc/system.d/system/moodlenet.service` with
+To have a systemd service link create the file `/etc/systemd/system/moodlenet.service` with
 the following content:
 ```
 [Unit]
