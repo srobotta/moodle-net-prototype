@@ -6,3 +6,4 @@ This repo is my personal collection on how to manage and run a Moodle Net instal
 * [Installation on a pure Debian/Ubuntu](./install_debian.md)
 * [My setup for production with Docker](./docker_setup.md)
 * [My setup for development with Docker](./docker_setup_dev.md)
+* [Deploy a MoodleNet custom environment](deploy_dev.md)
