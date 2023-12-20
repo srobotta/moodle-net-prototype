@@ -15,18 +15,23 @@ The setup of the live MoodleNet installation is a mixture as described in
 the setup MoodleNet for a [development](docker_setup_dev.md) and the
 [production](docker_setup.md) environment. From the production we use all
 setup that is not the MoodleNet code. The MoodleNet code needs to be the changeset
-that is in our repo and not coming from the npm public repo.
+that is in our repo and not coming from the public npm repository.
+
+### General Setup
 
 On the server I placed the code of MoodleNet into a directory called `moodlenet-dev`.
 However, this is a symbolic link to the actual release. When a deployment is done
 the code is copied into a new directory containing the release number. The symbolic
 link of `moodlenet-dev` is then adjusted to the new release dir.
 
+The node server needs to be started with `npm run dev-start-backend my-dev` and not
+like in production with `npm start`.
+
 ### Start/Stop script for systemd
 
 For some reason with the systemd script the MoodleNet service couldn't be reliably restarted (in
 conjunction with the dev environment - it works in the production environment.
-Therefore, I went another way to run npm myself with `nuhup npm run dev-start-backend my-dev &`.
+Therefore, I went another way to run npm myself with `nohup npm run dev-start-backend my-dev &`.
 This can also be executed in a terminal and then closing the connection and the service is running
 further.
 
@@ -53,5 +58,6 @@ required adjustments also in the deploy script itself, or report it here to make
 
 Todo:
 * use enivronment variables or a text file for the configuration variables.
-* pack the old release directories.
 * have an restore script that reverts back to a certain release.
+* Make the script work smoothly -> at the moment there are a few glitches so that it does not run out of the box,
+especially the restart of the mode js server.

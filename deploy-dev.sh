@@ -29,7 +29,11 @@ REMOTE_HOST=mymnet-server
 MNET_DOMAIN=https://moodlenet.example.org
 # How many releases to keep.
 RELEASES_TO_KEEP=5
+# Zip old releases
+ZIP_OLD=1
 
+# Prefix for the release directories
+release_dir_prefix='moodlenet-release-'
 # Determine the current release number and increase it by one. The
 # release number is stored in the file release.version on the remote server.
 release_number=$(ssh $REMOTE_HOST 'cat release.version')
@@ -40,7 +44,9 @@ release_number=$((release_number+1))
 ssh $REMOTE_HOST "echo $release_number > release.version"
 
 # Build the new release directory.
-release_dir=moodlenet-release-${release_number}
+release_dir=${release_dir_prefix}${release_number}
+
+echo "Create new release in ${release_dir_prefix}$release_number"
 
 # Determine absolute path of the resouce dir when not already given.
 # Absolute dir is required for symlinks.
@@ -84,14 +90,18 @@ echo 'done'
 echo 'Change symlink and restart service ...'
 
 # Stop the service, change the symlink and restart it
-ssh ${REMOTE_HOST} "killall 'npm run dev-start-backend my-dev' && \
-    rm ${INSTALL_DIR} && ln -s ${release_dir} ${INSTALL_DIR} && \
-    cd ${INSTALL_DIR} && nohup npm run dev-start-backend my-dev &"
+ssh ${REMOTE_HOST} "killall node && \
+    rm ${INSTALL_DIR} && ln -s ${release_dir} ${INSTALL_DIR}"
+ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev &"
+if [ $? -ne 0 ]; then
+    echo 'failed'
+else
+    echo 'done'
+fi
 # Copy the lastest webapp built at the appropriate place
 ssh $REMOTE_HOST "cp -r ${release_dir}/react-app_latest-build/* \
     ${release_dir}/.dev-machines/my-dev/fs/@moodlenet/react-app/webapp-build/latest-build/."
 
-echo 'done'
 echo -n "Try to reach ${MNET_DOMAIN} ... "
 # Try to reach the site:
 retries=5
@@ -110,8 +120,16 @@ while [ $retries -gt 0 ]; do
     fi 
 done
 
-echo -n 'Remove older release ... '
 # Remove older releases (here just go x version numbers back).
 old_release_dir=$((release_number-RELEASES_TO_KEEP))
-ssh $REMOTE_HOST "rm -r moodlenet-release-${old_release_dir}"
-echo 'done'
+echo -n "Remove older release: ${release_dir_prefix}${old_release_dir} ... "
+ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${old_release_dir} ]; then echo 'remove old dir'; rm -r ${release_dir_prefix}${old_release_dir}; fi"
+ssh $REMOTE_HOST "if [ -e ${release_dir_prefix}${old_release_dir}.tar.gz ]; then echo 'remove old tar'; rm ${release_dir_prefix}${old_release_dir}.tar.gz; fi"
+
+# Zip two previous releases
+if [ $ZIP_OLD -eq 1 ]; then
+   twoback=$((release_number-2))
+   echo -n "Zip release: ${release_dir_prefix}${twoback} ... "
+   ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${twoback} ]; then tar -czf ${release_dir_prefix}${twoback}.tar.gz ${release_dir_prefix}${twoback}; rm -r ${release_dir_prefix}${twoback}; fi"
+   echo 'done'
+fi
