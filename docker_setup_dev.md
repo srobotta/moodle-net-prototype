@@ -109,8 +109,8 @@ at http://localhost:8025.
 ## Development
 
 To have a setup running for the development process the following is recommended:
-* Run `npm run dev-start-backend my_dev` to have the node backend running
-* Run `npm run dev-start-webapp my.dev` to have the react frontend running. The frontend
+* Run `npm run dev-start-backend my-dev` to have the node backend running
+* Run `npm run dev-start-webapp my-dev` to have the react frontend running. The frontend
 is accessible at http://localhost:3000 (that's also mentioned in the console - actually the browser
 should be launched automatically to point you to the correct location.
 * Run `npm run dev-assistant` to have assets copied to the correct location.
