@@ -30,7 +30,7 @@ like in production with `npm start`.
 ### Start/Stop script for systemd
 
 For some reason with the systemd script the MoodleNet service couldn't be reliably restarted (in
-conjunction with the dev environment - it works in the production environment.
+conjunction with the dev environment - it works in the production environment).
 Therefore, I went another way to run npm myself with `nohup npm run dev-start-backend my-dev &`.
 This can also be executed in a terminal and then closing the connection and the service is running
 further.
