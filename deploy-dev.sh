@@ -92,7 +92,7 @@ echo 'Change symlink and restart service ...'
 # Stop the service, change the symlink and restart it
 ssh ${REMOTE_HOST} "killall node && \
     rm ${INSTALL_DIR} && ln -s ${release_dir} ${INSTALL_DIR}"
-ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev &"
+ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev > ../nohup.out.${release_number} 2>&1 &" &
 if [ $? -ne 0 ]; then
     echo 'failed'
 else
@@ -120,16 +120,26 @@ while [ $retries -gt 0 ]; do
     fi 
 done
 
-# Remove older releases (here just go x version numbers back).
+# Remove older releases (here just go back x version numbers).
 old_release_dir=$((release_number-RELEASES_TO_KEEP))
 echo -n "Remove older release: ${release_dir_prefix}${old_release_dir} ... "
-ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${old_release_dir} ]; then echo 'remove old dir'; rm -r ${release_dir_prefix}${old_release_dir}; fi"
-ssh $REMOTE_HOST "if [ -e ${release_dir_prefix}${old_release_dir}.tar.gz ]; then echo 'remove old tar'; rm ${release_dir_prefix}${old_release_dir}.tar.gz; fi"
+ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${old_release_dir} ]; \
+    then \
+        echo 'remove old dir'; rm -r ${release_dir_prefix}${old_release_dir}; \
+    fi"
+ssh $REMOTE_HOST "if [ -e ${release_dir_prefix}${old_release_dir}.tar.gz ]; \
+    then \
+        echo 'remove old tar'; rm ${release_dir_prefix}${old_release_dir}.tar.gz; \
+    fi"
 
 # Zip two previous releases
 if [ $ZIP_OLD -eq 1 ]; then
-   twoback=$((release_number-2))
-   echo -n "Zip release: ${release_dir_prefix}${twoback} ... "
-   ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${twoback} ]; then tar -czf ${release_dir_prefix}${twoback}.tar.gz ${release_dir_prefix}${twoback}; rm -r ${release_dir_prefix}${twoback}; fi"
+    twoback=$((release_number-2))
+    echo -n "Zip release: ${release_dir_prefix}${twoback} ... "
+    ssh $REMOTE_HOST "if [ -d ${release_dir_prefix}${twoback} ]; \
+        then \
+            tar -czf ${release_dir_prefix}${twoback}.tar.gz ${release_dir_prefix}${twoback}; \
+            rm -r ${release_dir_prefix}${twoback}; \
+        fi"
    echo 'done'
 fi
