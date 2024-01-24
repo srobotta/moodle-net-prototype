@@ -92,7 +92,7 @@ echo 'Change symlink and restart service ...'
 # Stop the service, change the symlink and restart it
 ssh ${REMOTE_HOST} "killall node && \
     rm ${INSTALL_DIR} && ln -s ${release_dir} ${INSTALL_DIR}"
-ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev > ../nohup.out.${release_number} 2>&1 &" &
+ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev > ~/nohup.out.${release_number} 2>&1 &" &
 if [ $? -ne 0 ]; then
     echo 'failed'
 else
@@ -104,7 +104,7 @@ ssh $REMOTE_HOST "cp -r ${release_dir}/react-app_latest-build/* \
 
 echo -n "Try to reach ${MNET_DOMAIN} ... "
 # Try to reach the site:
-retries=5
+retries=10
 while [ $retries -gt 0 ]; do
     http_code=$(curl -o /dev/null -s -w "%{http_code}\n" ${MNET_DOMAIN})
     if [ $http_code -lt 300 ]; then
@@ -142,4 +142,5 @@ if [ $ZIP_OLD -eq 1 ]; then
             rm -r ${release_dir_prefix}${twoback}; \
         fi"
    echo 'done'
+   ssh $REMOTE_HOST "if [ -e ~/nohup.out.${twoback} ]; then rm ~/nohup.out.${twoback}; fi"
 fi
