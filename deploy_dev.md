@@ -44,10 +44,12 @@ The deploy-script simply does the following:
 * Copy everything into a new release directory based on that release number. Several files can be omitted
   (with the `--exclude` flag).
 * On the server link the uploaded dir with the new release dir.
-* Restart the MoodleNet service (with the systemd script) and check if the site is reachable.
+* Restart the MoodleNet service (try to kill any npm processes, restart MoodleNet with the provided command)
+  and check if the site is reachable.
+* Delete and/or tar older release directories (this may take a while).
 
 Note: When the server is restarted, the compiled webapp seems missing (because of the database setting?) and
-needs to be rebuilt. This, of course, is usually done with a separate nom task. Therefore, we copy the recently
+needs to be rebuilt. This, of course, is usually done with a separate `npm` task. Therefore, we copy the recently
 created webapp into the correct directory **after** the service is started. Upon the first call, the app is rebuilt
 by the request. Thus, the deploy-script does several curl calls to check whether the
 service is up and running again.
