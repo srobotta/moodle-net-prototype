@@ -208,14 +208,9 @@ Sometimes you need to make changes to the webserver reverse proxy (e.g. add a us
 admin access, add an entry to the black list). Changes must be done on the config of the
 server itself.
 
-Login to the Docker container (Nginx):
-```
-docker exec -it mn-nginx-rv-proxy sh
-```
-
 Reload Nginx after you have changed the configuration:
 ```
-nginx -s reload -c /etc/nginx/nginx.conf
+docker exec -it mn-nginx-rv-proxy nginx -s reload -c /etc/nginx/nginx.conf
 ```
 
 From outside the Nginx container, watch logs by:
