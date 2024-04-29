@@ -16,21 +16,34 @@
 # symlinked to that release dir and the service is restarted.
 # All variables in capitalized letters should be adjusted to your setup.
 
-# The directory on your machine, where to copy the data from.
-SRC_DIR=/home/ubuntu/workspace/moodlenet
-# The installation directory where the software is installed on the remote server.
-INSTALL_DIR=moodlenet-dev
-# Directory that contains the simple-file-store directories and the config files
-# (on the remote server)
-RESOURCE_DIR=moodlenet-simple-file-store
-# The remote server and username, as it can be used by ssh/rsync.
-REMOTE_HOST=mymnet-server
-# The domain name (and path) where your MoodleNet installation can be reached via the web.
-MNET_DOMAIN=https://moodlenet.example.org
+# Fetch deploy config
+if [ -z $1 ] || [ ! -e $1 ]; then
+    echo 'No or inexistend deployment config file given'
+    exit 1;
+fi
+
+source $1
+
+# Check config $SRC_DIR
+if [ -z $SRC_DIR ] || [ ! -d $SRC_DIR ]; then
+    echo "Missing parameter \$SRC_DIR or inexistent dir $SRC_DIR"
+    exit 1
+fi
+
+# Check all other config variables.
+if [[ -z $INSTALL_DIR  || -z $RESOURCE_DIR || -z $REMOTE_HOST || -z $MNET_DOMAIN ]]; then
+    echo 'Missing config: $INSTALL_DIR or $RESOURCE_DIR or $REMOTE_HOST or $MNET_DOMAIN'
+    exit 1
+fi
+
 # How many releases to keep.
-RELEASES_TO_KEEP=5
+if [ -z $RELEASES_TO_KEEP ]; then
+    RELEASES_TO_KEEP=5
+fi
 # Zip old releases
-ZIP_OLD=1
+if [ -z $ZIP_OLD ]; then
+    ZIP_OLD=1
+fi
 
 # Prefix for the release directories
 release_dir_prefix='moodlenet-release-'
@@ -45,8 +58,12 @@ ssh $REMOTE_HOST "echo $release_number > release.version"
 
 # Build the new release directory.
 release_dir=${release_dir_prefix}${release_number}
+if [ ${release_dir:0:1} != '/' ]; then
+    homedir=$(ssh $REMOTE_HOST pwd)
+    release_dir=$homedir/$release_dir
+fi
 
-echo "Create new release in ${release_dir_prefix}$release_number"
+echo "Create new release in ${release_dir_prefix}${release_number}"
 
 # Determine absolute path of the resouce dir when not already given.
 # Absolute dir is required for symlinks.
@@ -66,6 +83,7 @@ rsync -az ${SRC_DIR}/ \
    --exclude 'web-user/simple-file-store' \
    --exclude '.dev-machines/my-dev/log' \
    --exclude '.git' \
+   --exclude '.gitignore' \
    --exclude '.husky' \
    --exclude '.idea' \
    --exclude '.vscode' \
@@ -85,6 +103,10 @@ done
 # crypto keys must also be right unter .dev-machines
 ssh $REMOTE_HOST "cp ${release_dir}/.dev-machines/my-dev/*crypto* ${release_dir}/.dev-machines"
 
+# Fix paths in package.json and other location from old dev location to installed location
+ssh $REMOTE_HOST "cd ${release_dir}; grep -lri $SRC_DIR * | while read f ; do sed -i 's|${SRC_DIR}|${release_dir}|g' \$f; done"
+ssh $REMOTE_HOST "cd ${release_dir}/.dev-machines; grep -lri $SRC_DIR * | while read f ; do sed -i 's|${SRC_DIR}|${release_dir}|g' \$f; done"
+
 
 echo 'done'
 echo 'Change symlink and restart service ...'
@@ -99,8 +121,10 @@ else
     echo 'done'
 fi
 # Copy the lastest webapp built at the appropriate place
-ssh $REMOTE_HOST "cp -r ${release_dir}/react-app_latest-build/* \
-    ${release_dir}/.dev-machines/my-dev/fs/@moodlenet/react-app/webapp-build/latest-build/."
+#ssh $REMOTE_HOST "cp -r ${release_dir}/react-app_latest-build/* \
+#    ${release_dir}/.dev-machines/my-dev/fs/@moodlenet/react-app/webapp-build/latest-build/."
+
+
 
 echo -n "Try to reach ${MNET_DOMAIN} ... "
 # Try to reach the site:
@@ -111,7 +135,7 @@ while [ $retries -gt 0 ]; do
         echo "OK with response $http_code"
         retries=0
     else
-        sleep 2
+        sleep 5
         retries=$((retries-1))
         echo "failed with response $http_code"
         if [ $retries -gt 0 ]; then

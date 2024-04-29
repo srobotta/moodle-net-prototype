@@ -1,0 +1,18 @@
+# All the configuration variables that are needed for the
+# deployment script deploy-dev.sh
+
+# The directory on your machine, where to copy the data from.
+SRC_DIR=/home/ubuntu/workspace/moodlenet
+# The installation directory where the software is installed on the remote server.
+INSTALL_DIR=moodlenet-dev
+# Directory that contains the simple-file-store directories and the config files
+# (on the remote server)
+RESOURCE_DIR=moodlenet-simple-file-store
+# The remote server and username, as it can be used by ssh/rsync.
+REMOTE_HOST=mymnet-server
+# The domain name (and path) where your MoodleNet installation can be reached via the web.
+MNET_DOMAIN=https://moodlenet.example.org
+# How many releases to keep.
+RELEASES_TO_KEEP=5
+# Zip old releases
+ZIP_OLD=1
