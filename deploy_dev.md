@@ -69,13 +69,21 @@ total 20
 -rw------- 1 ubuntu ubuntu 2484 Jun  5 15:27 saml.pem
 ```
 
-### Start/Stop script for systemd
+### Start/Stop script
+
+Because of some configuration changes and troubleshooting I needed an easy start/stop service.
+This let me write the `service.sh` script which starts or stops the MoodleNet service
+according to the setup described above.
+Since MoodleNet is the only node software running on the machine, the `killall node` can be
+used to stop the service. If you have more node services running, this would kill them as well.
+
+#### systemd
 
 For some reason with the systemd script the MoodleNet service couldn't be reliably restarted (in
 conjunction with the dev environment - it works in the production environment).
-Therefore, I went another way to run npm myself with `nohup npm run dev-start-backend my-dev &`.
-This can also be executed in a terminal and then closing the connection and the service is running
-further.
+Therefore, the `service.sh`script can be used to start and stop MoodleNet. Maybe with this script
+handling can be delegated again to systemd, this needs to be checked out.
+
 
 ### Deploy process
 
