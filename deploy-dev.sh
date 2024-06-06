@@ -120,11 +120,6 @@ if [ $? -ne 0 ]; then
 else
     echo 'done'
 fi
-# Copy the lastest webapp built at the appropriate place
-#ssh $REMOTE_HOST "cp -r ${release_dir}/react-app_latest-build/* \
-#    ${release_dir}/.dev-machines/my-dev/fs/@moodlenet/react-app/webapp-build/latest-build/."
-
-
 
 echo -n "Try to reach ${MNET_DOMAIN} ... "
 # Try to reach the site:
