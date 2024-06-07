@@ -7,8 +7,6 @@
 #   - a config directory with the current config files and crypto keys.
 #   - that contains the four directories that have the simple-file-store mechanism where
 #     all the uploaded files are stored.
-# - use systemd start/stop scripts for MoodleNet (see this repo)
-# - the "machine name" where the MoodleNet dev install is running is named: my-dev.
 #
 # The script copies all files from your dev machine to the server into a new created
 # release directory. Then all adjustments (copy config files, symlink simple-file-stores)
@@ -31,8 +29,8 @@ if [ -z $SRC_DIR ] || [ ! -d $SRC_DIR ]; then
 fi
 
 # Check all other config variables.
-if [[ -z $INSTALL_DIR  || -z $RESOURCE_DIR || -z $REMOTE_HOST || -z $MNET_DOMAIN ]]; then
-    echo 'Missing config: $INSTALL_DIR or $RESOURCE_DIR or $REMOTE_HOST or $MNET_DOMAIN'
+if [[ -z $INSTALL_DIR  || -z $RESOURCE_DIR || -z $REMOTE_HOST || -z $MNET_DOMAIN || -z $DEV_NAME ]]; then
+    echo 'Missing config: $INSTALL_DIR or $RESOURCE_DIR or $REMOTE_HOST or $MNET_DOMAIN or $DEV_NAME'
     exit 1
 fi
 
@@ -81,7 +79,7 @@ rsync -az ${SRC_DIR}/ \
    --exclude 'collection/simple-file-store' \
    --exclude 'organization/simple-file-store' \
    --exclude 'web-user/simple-file-store' \
-   --exclude '.dev-machines/my-dev/log' \
+   --exclude '.dev-machines/*/log' \
    --exclude '.git' \
    --exclude '.gitignore' \
    --exclude '.husky' \
@@ -90,18 +88,18 @@ rsync -az ${SRC_DIR}/ \
    --exclude 'default.c*'
 
 # Copy the built webapp into the new release dir
-rsync -az ${SRC_DIR}/.dev-machines/my-dev/fs/@moodlenet/react-app/webapp-build/latest-build/ ${REMOTE_HOST}:${release_dir}/react-app_latest-build
+rsync -az ${SRC_DIR}/.dev-machines/${DEV_NAME}/fs/@moodlenet/react-app/webapp-build/latest-build/ ${REMOTE_HOST}:${release_dir}/react-app_latest-build
 
 echo 'done'
 echo -n 'Copy config and link resources ... '
 
 # Adjust symlinks for simple-file-store and copy config files to release dir
-ssh $REMOTE_HOST "cp ${RESOURCE_DIR}/config/* ${release_dir}/.dev-machines/my-dev/."
+ssh $REMOTE_HOST "cp ${RESOURCE_DIR}/config/* ${release_dir}/.dev-machines/${DEV_NAME}/."
 for i in collection ed-resource organization web-user; do
-    ssh $REMOTE_HOST "ln -s ${RESOURCE_DIR}/${i}/simple-file-store ${release_dir}/.dev-machines/my-dev/fs/@moodlenet/${i}"
+    ssh $REMOTE_HOST "ln -s ${RESOURCE_DIR}/${i}/simple-file-store ${release_dir}/.dev-machines/${DEV_NAME}/fs/@moodlenet/${i}"
 done
 # crypto keys must also be right unter .dev-machines
-ssh $REMOTE_HOST "cp ${release_dir}/.dev-machines/my-dev/*crypto* ${release_dir}/.dev-machines"
+ssh $REMOTE_HOST "cp ${release_dir}/.dev-machines/${DEV_NAME}/*crypto* ${release_dir}/.dev-machines"
 
 # Fix paths in package.json and other location from old dev location to installed location
 ssh $REMOTE_HOST "cd ${release_dir}; grep -lri $SRC_DIR * | while read f ; do sed -i 's|${SRC_DIR}|${release_dir}|g' \$f; done"
@@ -114,7 +112,7 @@ echo 'Change symlink and restart service ...'
 # Stop the service, change the symlink and restart it
 ssh ${REMOTE_HOST} "killall node && \
     rm ${INSTALL_DIR} && ln -s ${release_dir} ${INSTALL_DIR}"
-ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend my-dev > ~/nohup.out.${release_number} 2>&1 &" &
+ssh ${REMOTE_HOST} "cd ${INSTALL_DIR} ; nohup npm run dev-start-backend ${DEV_NAME} > ~/nohup.out.${release_number} 2>&1 &" &
 if [ $? -ne 0 ]; then
     echo 'failed'
 else

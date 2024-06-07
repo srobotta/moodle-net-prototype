@@ -10,6 +10,8 @@ INSTALL_DIR=moodlenet-dev
 RESOURCE_DIR=moodlenet-simple-file-store
 # The remote server and username, as it can be used by ssh/rsync.
 REMOTE_HOST=mymnet-server
+# The name of the dev environment, that is also reflected in .dev-machines/$DEV_NAME
+DEV_NAME=my-dev
 # The domain name (and path) where your MoodleNet installation can be reached via the web.
 MNET_DOMAIN=https://moodlenet.example.org
 # How many releases to keep.
