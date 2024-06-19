@@ -229,6 +229,18 @@ within the docker setup (the content that was copied from the directory `docker_
 in this repo) so that these changes are included in the setup in case containers are
 rebuilt.
 
+### Agango database dump
 
+To dump the complete database content from your Aragno DB, you may do the following:
 
+```
+docker exec  mn-arangodb sh -c 'rm -rf /dump && arangodump --all-databases'
+t=arango-dump-$(date +%Y-%m-%d-%H-%M); docker cp mn-arangodb:/dump $t
+```
 
+This makes use of the `arangodump` command, which must be run inside the container.
+In the second step, a local directory is created and the dumped files inside the container
+are copied to the host machine.
+
+The container name *mn-arangodb* is taken from the `docker-compose.yml`. If you use a
+different name there, please adjust the name of the container in these two commands.
