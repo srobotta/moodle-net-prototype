@@ -229,7 +229,7 @@ within the docker setup (the content that was copied from the directory `docker_
 in this repo) so that these changes are included in the setup in case containers are
 rebuilt.
 
-### Agango database dump
+### Arango database dump
 
 To dump the complete database content from your Aragno DB, you may do the following:
 
@@ -244,3 +244,24 @@ are copied to the host machine.
 
 The container name *mn-arangodb* is taken from the `docker-compose.yml`. If you use a
 different name there, please adjust the name of the container in these two commands.
+
+### Arango database retore
+
+If you have created a backup with the mentioned method above, you can restore it with
+the following commands:
+
+```
+docker exec -it mn-arangodb sh -c 'rm -rf /dump'
+docker cp arango-dump-2024-06-19-12-45/dump mn-arangodb:.
+docker exec -it mn-arangodb sh -c 'arangorestore --all-databases'
+```
+
+When a backup is created all relevant files are inside the `dump` directory. This
+directory must be copied from your backup dir into the docker container in the
+root directory. First the possibly previously created dump directory is deleted.
+In the next step the dumped data is copied inside the container into `/dump`.
+Form there the `arangorestore` tool reads the data and writes it into the
+database.
+
+Note: in the backup and restore process no passwords are used, I did this
+for the dev system only.
