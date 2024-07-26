@@ -7,3 +7,4 @@ This repo is my personal collection on how to manage and run a Moodle Net instal
 * [My setup for production with Docker](./docker_setup.md)
 * [My setup for development with Docker](./docker_setup_dev.md)
 * [Deploy a MoodleNet custom environment](deploy_dev.md)
+* [Tweaks to administrate MoodleNet](tweaks.md)

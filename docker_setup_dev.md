@@ -134,17 +134,3 @@ these changes already. This will also not be necessary some time in the future.
 If you change images/icons etc. you may need to run `npx lerna run copy-assets` so that these are
 placed at the correct location. This might be also the case if the webapp doesn't start because of missing
 asset files. At any point in the future this will be changed.
-
-
-## Tweeks
-
-### Arango DB Webadmin
-
-To access the Agango DB browser backend, simply navigate in your browser to
-http://localhost:8529/
-
-### Adapt changes to Nginx
-
-Since Nginx runs in a docker container like on the productive environment
-the config changes and restarts are done in the same way as described
-[for the productive environment](docker_setup.md#adapt-changes-to-nginx)
