@@ -15,15 +15,15 @@ def getCredentialsFromContig(file: str):
     except KeyError:
         print("No host found in the configuration file.")
     try:
-        cfg['token'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['BearerAuthCredentials']['token']
+        cfg['token'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['auth']['token']
     except KeyError:
         pass
     try:
-        cfg['username'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['BasicAuthCredentials']['username']
+        cfg['username'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['auth']['username']
     except KeyError:
         cfg['username'] = 'root'
     try:
-        cfg['password'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['BasicAuthCredentials']['password']
+        cfg['password'] = data['pkgs']['@moodlenet/arangodb']['connectionCfg']['auth']['password']
     except KeyError:
         cfg['password'] = ''
     return cfg
@@ -121,23 +121,12 @@ def getDbConnection(args):
             dbpass = input()
 
     client = ArangoClient(hosts=dbhost)
-    sys_db = client.db('_system', user_token=dbtoken) if dbtoken else client.db('_system', username=dbuser, password=dbpass)
-    try:
-        sys_db.has_database('_system')
-    except Exception as e:
-        print("Could not connect to the database.")
-        sys.exit(1)
-
-    return client, sys_db, dbuser, dbpass, dbtoken
+    return client, dbuser, dbpass, dbtoken
 
 def main():
-    (client, sys_db, dbuser, dbpass, dbtoken) = getDbConnection(getParserArgs())
+    (client, dbuser, dbpass, dbtoken) = getDbConnection(getParserArgs())
     # Select the database
     db_name = 'moodlenet__web-user'
-    if not sys_db.has_database(db_name):
-        print(f"Database {db_name} does not exist.")
-        sys.exit(1)
-
     db = client.db(db_name, user_token=dbtoken) if dbtoken else client.db(db_name, username=dbuser, password=dbpass)
 
     # Retrieve all documents from the collection
