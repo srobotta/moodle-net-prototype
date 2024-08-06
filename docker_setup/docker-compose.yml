@@ -1,6 +1,6 @@
 version: '3.5'
 services:
-  mnarango:
+  arangodb:
     image: arangodb
     container_name: mn-arangodb
     restart: always
