@@ -62,8 +62,7 @@ After you have done the setup to pull the new image, the following steps can be 
    However, it will probably not come up because the database files are older than the binary.
    Check this out with `docker ps` and you probably see the nginx and letsencrypt containers running.
 1. Run the db upgrade process `docker-compose run --rm arangodb arangod --database.auto-upgrade`.
-   Look at the output, this should upgrade your db files.
-1. Run `docker-compose up -d` to finally start the arangodb container.
+   Look at the output, this should upgrade your db files and also start the container successfully.
 1. Restart MoodleNet (e.g. with the `service.sh` script)
 
 The service name (in this case `arangodb`) is the name used in the docker-compose.yml file which
