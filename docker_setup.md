@@ -193,3 +193,9 @@ enable logging and fetch the confirmation link from the logs.
 3. Login as admin via *\<domain>/login/root* (password is in the `default.config.json` in
 the key *@moodlenet/system-entities* -> *rootPassword*)
 4. In the users list make that user an admin by clicking the icon.
+
+### Database Credentials
+
+By default (within this repo) the `docker-compose.yml` uses the Arango DB without authentication.
+This is intended for testing purposes only but not for a productive environment. Please check
+out [how to enable authentication to the database](./tweaks.md#authentication).

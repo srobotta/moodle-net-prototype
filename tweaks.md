@@ -1,6 +1,5 @@
 # Tweaks running MoodleNet
 
-
 ## Arango DB
 
 ### Webadmin
@@ -11,6 +10,44 @@ http://localhost:8529/
 This also works if the server is remote. In this case I use ssh portforwarding
 in this way `ssh -NL 8529:localhost:8529 user@moodlenet.server`.
 
+### Authentication
+
+Be aware that by default, the docker container for Arango has **authentication disabled**. You
+notice that when accessing the webinterface or using MoodleNet, no credentials are provided and
+used.
+
+After running the arangodb for the first time, login to the database via the webfrontend, in the left navigation menu and:
+1. go to Users
+1. click on "Add user"
+1. provide a user name and a password and click "Create"
+1. in the list of users, click on the new user name to edit the user
+1. in the tabs on top, click the "Permissions" tab
+1. for all "moodlenet__*" tables, set the permission to "administrate"
+
+After having the new user, the MoodleNet config file needs to be adapted e.g.
+`moodlenet/.dev-machines/my-dev/default.config.json` and the database section needs to have the
+new credentials:
+
+```
+"@moodlenet/arangodb": {
+    "connectionCfg": {
+        "url": "http://localhost:8529",
+        "auth": {
+            "username": "moodlenetuser",
+            "password": "theNewPassword"
+        }
+    }
+}
+```
+
+You may also deactivate the root user in the Arango DB user list, or set him a strong password.
+
+In the `docker-composer.yml` delete the line `ARANGO_NO_AUTH: '1'` at the arangodb container.
+After doing so, restart the container by `docker-compose up --detach --build arangodb`.
+
+Also stop the node backend process and start it again so that the new credentials are read from
+the config file. You may use the `service.sh` script from this repo.
+
 ### Upgrade ArangoDB
 
 Sometimes you may want to upgrade the Arango DB. In my `docker-compose.yml` file I use the latest
@@ -20,13 +57,20 @@ the new image version that you want to use.
 After you have done the setup to pull the new image, the following steps can be done:
 
 1. Stop the containers `docker-compose down`
-1. Remove the arangodb image  `ocker image list | grep arangodb | awk '{print $3}' | xargs docker rmi {}`
-1. Restart the docker images `docker-compose up -d` which will pull the new arangodb image
+1. Remove the arangodb image  `docker image list | grep arangodb | awk '{print $3}' | xargs docker rmi`
+1. Restart the docker images `docker compose up -d` which will pull the new arangodb image
    However, it will probably not come up because the database files are older than the binary.
    Check this out with `docker ps` and you probably see the nginx and letsencrypt containers running.
 1. Run the db upgrade process `docker-compose run --rm arangodb arangod --database.auto-upgrade`.
    Look at the output, this should upgrade your db files.
 1. Run `docker-compose up -d` to finally start the arangodb container.
+1. Restart MoodleNet (e.g. with the `service.sh` script)
+
+The service name (in this case `arangodb`) is the name used in the docker-compose.yml file which
+is used in the next lower level after *service:*.
+
+If everything worked out correctly, you have your installation running. In the webadmin of the
+database you can see the version number, that should be different from before.
 
 ### Database dump
 
