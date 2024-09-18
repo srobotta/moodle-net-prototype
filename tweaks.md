@@ -80,6 +80,12 @@ docker exec  mn-arangodb sh -c 'rm -rf /dump && arangodump --all-databases'
 t=arango-dump-$(date +%Y-%m-%d-%H-%M); docker cp mn-arangodb:/dump $t
 ```
 
+In case you have set a password for your root account, you must provide it like this:
+
+```
+docker exec  mn-arangodb sh -c 'rm -rf /dump && arangodump --server.password "my-secret" --all-databases'
+```
+
 This makes use of the `arangodump` command, which must be run inside the container.
 In the second step, a local directory is created and the dumped files inside the container
 are copied to the host machine.
@@ -97,6 +103,8 @@ docker exec -it mn-arangodb sh -c 'rm -rf /dump'
 docker cp arango-dump-2024-06-19-12-45/dump mn-arangodb:.
 docker exec -it mn-arangodb sh -c 'arangorestore --all-databases'
 ```
+
+Note: the restore with a root password works like the dump command.
 
 When a backup is created all relevant files are inside the `dump` directory. This
 directory must be copied from your backup dir into the docker container in the
