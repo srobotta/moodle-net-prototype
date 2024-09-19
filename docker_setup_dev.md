@@ -108,29 +108,56 @@ at http://localhost:8025.
 
 ## Development
 
-To have a setup running for the development process the following is recommended:
-* Run `npm run dev-start-backend my-dev` to have the node backend running
-* Run `npm run dev-start-webapp my-dev` to have the react frontend running. The frontend
-is accessible at http://localhost:3000 (that's also mentioned in the console - actually the browser
-should be launched automatically to point you to the correct location.
-* Run `npm run dev-assistant` to have assets copied to the correct location.
-* Run `npm run prj-build-watch` to rebuild the app when changing any jsx or similar file.
+Whenever you switch branches and want to develop on the application the following
+steps should be followed:
 
-All these processes must run in a different terminal, so you have 4 terminals open. It's always a good
-choice to have a glance at these terminals from time to time. If something is not working as expected
-you may spot the error inside the output in the terminal.
+1. (Optional) clean the old vendor directory and build files from a former branch:
+```
+npm run prj-cleanup-all
+rm -rf node_modules
+```
 
-If the webapp is not starting because of a missing `_resolve-alias_.json` then check that the keys are
-set to false:
+2. Reinstall packages:
+```
+npm install
+```
+
+3. Copy assets:
+```
+npx lerna run copy-assets
+```
+
+4. Start the backend server (node process, accessible at http://localhost:8080):
+```
+npm run dev-start-backend my-dev
+```
+
+5. Start the webapplication in a new terminal (react frontend, accessible at http://localhost:3000):
+```
+npm run dev-start-webapp my-dev
+```
+
+6. Start the watch task in a new terminal:
+```
+npm run prj-build-watch
+```
+
+If something is not working as expected you may spot the error inside the output in the
+terminal.
+
+If the webapp is not starting because of a missing `_resolve-alias_.json` then check
+that the keys are set to false:
 * pkgs["@moodlenet/react-app"]["noWebappServer"]: false
 * pkgs["@moodlenet/react-app"]["noWebappBuilder"]: false
 
-You find them in the `default.config.json` and if you follow the steps above, the patch should have made
-these changes already. This will also not be necessary some time in the future.
-
+You find them in the `default.config.json` and if you follow the steps above,
+the patch should have made these changes already. This will also not be necessary some time in the future.
 
 ### Copy assets via lerna task
 
-If you change images/icons etc. you may need to run `npx lerna run copy-assets` so that these are
-placed at the correct location. This might be also the case if the webapp doesn't start because of missing
-asset files. At any point in the future this will be changed.
+If you change images/icons etc. or the webapp cannot be started because of missing
+some *.svg or similar files, then you may need to run `npx lerna run copy-assets` so
+that these are placed at the correct location.
+
+This may change in future at any point because assets should be copied automatically
+in the build process.
