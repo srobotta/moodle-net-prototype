@@ -140,7 +140,57 @@ docker ps | grep nginx | cut -d \  -f 1 | xargs docker logs --follow
 
 The container id can be obtained from the output of `docker ps`.
 
+### Rebuild the container
+
 **Note**: If you want to keep the changes persistent, you should also change the files
 within the docker setup (the content that was copied from the directory `docker_setup`
 in this repo - the nginx files reside in `docker_setup/data/nginx`) so that these changes
 are included in the setup in case containers are rebuilt.
+
+This is also necessary when you change anything at the `docker-compose.yml` file (in this case for nginx).
+
+To rebuild just the nginx container do the following:
+
+```
+docker compose down nginx
+docker compose up -d --build  nginx
+```
+
+The first command stops the container. The second command rebuilds the container and then starts
+it in daemon mode.
+
+### Manual
+
+For our instance we want to have a manual for the platform so that the user has a reference on how
+to use the platform e.g. how to login in, downloading or even uploading and publishing a resource.
+
+The idea is to display some manual pages at a link that is within the platform. Since we have a running
+nginx as a reverse proxy we could use that webserver to simply serve some additional html files and images
+that are located outside of the node application in a random directory on the server.
+
+The html site is build elsewhere and then uploaded into a directory on the server. In my case this is
+`/home/oer/manual`. This directory must be included in the `nginx` service as an extra volume share. The
+`docker-compose.yml` has to be extended by the line `./manual:/var/www/manual` in the section
+`services.nginx.volumes`. You may adapt the source path for your setup.
+
+In addition the nginx config needs to be extended by the following directives:
+
+```
+location /manual/ {
+    alias /var/www/manual/index.html;
+}
+
+location /manual {
+    return 301 /manual/index.html;
+}
+
+location ~ ^/manual/(.*?)$ {
+    alias /var/www/manual/$1;
+}
+```
+
+This ensures that `https://oer.example/manual/index.html` serves the manual pages. The first directive is the
+abbreviation for the directory with trailing slash. The second directive is the abbreviation for the directory
+without the trailing slash. The last directive serves all files below `/manual/` for the corresponding request.
+This includes the main `index.html` as well as any image that is embedded in the page and in the same or a sub
+directory.
