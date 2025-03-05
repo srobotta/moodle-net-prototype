@@ -161,3 +161,20 @@ that these are placed at the correct location.
 
 This may change in future at any point because assets should be copied automatically
 in the build process.
+
+### Missing scss files
+
+When installing a fresh MoodleNet, at the very first time the webapp may not be compiled
+because of missing scss files (check the output at the console). In this case the
+following files need to be copied from the `src` directory to the `dist` directory:
+
+```
+cd packages/extensions-manager
+cp src/webapp/components/organisms/ExtensionsList/ExtensionsList.scss dist/webapp/components/organisms/ExtensionsList/.
+cp src/webapp/components/pages/ExtensionInfo/ExtensionInfo.scss dist/webapp/components/pages/ExtensionInfo/.
+cp src/webapp/components/pages/Extensions/Extensions.scss dist/webapp/components/pages/Extensions/.
+cp src/webapp/components/pages/ManageExtensions/ManageExtensions.scss dist/webapp/components/pages/ManageExtensions/.
+```
+
+Going back to the main directory and running `npm run dev-start-backend my-dev` should start the backend and this
+time compile the webapp.
