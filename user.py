@@ -5,8 +5,9 @@ from arango import ArangoClient
 import json
 import argparse
 import sys
+from collections import defaultdict
 
-def getCredentialsFromContig(file: str):
+def getCredentialsFromConfig(file: str):
     with open(file, 'r') as fin:
         data = json.load(fin)
     cfg = {}
@@ -97,7 +98,7 @@ def getDbConnection(args):
     dbtoken = None
 
     if args.config:
-        credentials = getCredentialsFromContig(args.config)
+        credentials = getCredentialsFromConfig(args.config)
         if 'token' in credentials:
             dbtoken = credentials['token']
         else:
@@ -123,22 +124,86 @@ def getDbConnection(args):
     client = ArangoClient(hosts=dbhost)
     return client, dbuser, dbpass, dbtoken
 
+def getUserDisplaynameWithLastLogin(db):
+    documents = list(getDocumentsInCollection(db, 'WebUser'))
+
+    max_length = 0
+    for doc in documents:
+        max_length = max(len(doc['displayName']), max_length)
+
+
+    for doc in documents:
+        padded = ("{:<" + str(max_length) + "} {}").format(doc['displayName'], doc['lastVisit']['at'])
+        print(padded)
+
+    # Optionally, you can collect all documents in a list
+    print("Total users:", len(documents))
+
+def getResourcesFilesByType(db):
+    documents = getDocumentsInCollection(db, 'Moodlenet_simple_file_store_resources')
+
+    type_counts = defaultdict(int)
+
+    for doc in documents:
+        file_type = doc.get('rpcFile', {}).get('type')
+        if file_type == 'application/octet-stream':
+            fname = doc.get('rpcFile', {}).get('name')
+            p = fname.rfind('.')
+            if p > -1:
+                file_type = fname[(p + 1):]
+
+        if file_type:
+            type_counts[file_type] += 1
+
+    # Print results
+    for file_type, count in type_counts.items():
+        print(f"{file_type}: {count}")
+
+    print("Total resources:", len(documents))
+
+def getResources(db):
+    documents = list(getDocumentsInCollection(db, 'moodlenet__ed-resource__Resource'))
+
+    for doc in documents:
+        print("{} {} {} -> {}".format(
+            doc['_key'],
+            doc['content']['kind'],
+            '1' if doc['published'] else '0',
+            doc['title'])
+        )
+
+    print("Total resources:", len(documents))
+
+def getResourceLists(db):
+    documents = list(getDocumentsInCollection(db, 'moodlenet__collection__Collection'))
+
+    print('updated at;published;number of resources;title;')
+    for doc in documents:
+        print('{};{};{};"{}";'.format(
+            doc['_meta']['updated'][0:10],
+            '1' if doc['published'] else '0',
+            len(doc['resourceList']),
+            doc['title'].replace('"', '""')
+        ))
+
+
 def main():
     (client, dbuser, dbpass, dbtoken) = getDbConnection(getParserArgs())
     # Select the database
     db_name = 'moodlenet__web-user'
     db = client.db(db_name, user_token=dbtoken) if dbtoken else client.db(db_name, username=dbuser, password=dbpass)
-
     # Retrieve all documents from the collection
     #documents = getDocumentsInCollection(db, 'WebUser', {"displayName": 'Stephan'}, like=True)
-    documents = getDocumentsInCollection(db, 'WebUser')
+    getUserDisplaynameWithLastLogin(db)
 
-    # Print the documents
-    for doc in documents:
-        print(doc)
+    db_name = 'moodlenet__ed-resource'
+    db = client.db(db_name, user_token=dbtoken) if dbtoken else client.db(db_name, username=dbuser, password=dbpass)
+    getResourcesFilesByType(db)
 
-    # Optionally, you can collect all documents in a list
-    print("Total documents retrieved:", len(documents))
+    db_name = 'moodlenet__system-entities'
+    db = client.db(db_name, user_token=dbtoken) if dbtoken else client.db(db_name, username=dbuser, password=dbpass)
+    getResources(db)
+    getResourceLists(db)
 
     #updateDocumentInCollection(db, 'WebUser', '94462', {'displayName': 'John Doe'})
 
