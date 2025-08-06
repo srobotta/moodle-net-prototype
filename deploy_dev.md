@@ -9,6 +9,9 @@ The use case for this approach is: I can locally develop my MoodleNet
 instance (having a fork from the master repo) and then deploy my changes
 onto a public accessible installation.
 
+The drawback is that I use a dev environment on a production machine, e.g.
+the optimized code etc. is not used.
+
 ## Prerequisites
 
 The setup of the live MoodleNet installation is a mixture as described in
@@ -69,6 +72,8 @@ total 20
 -rw------- 1 ubuntu ubuntu 2484 Jun  5 15:27 saml.pem
 ```
 
+The two saml files are for our SSO and are missing in the default MoodleNet installation.
+
 ### Start/Stop script
 
 Because of some configuration changes and troubleshooting I needed an easy start/stop service.
@@ -90,7 +95,7 @@ handling can be delegated again to systemd, this needs to be checked out.
 The whole effort to deploy a MoodleNet dev installation onto a public server is in the script `deploy-dev.sh`. The script relies on the setup as described above.
 
 The deploy-script does the following:
-* Create a new release number (this is a natural number that's increased by one during every deployment).
+* Create a new release number (this is a natural number that's increased by one during every deployment and stored in `release.version`).
 * Copy everything into a new release directory based on that release number. Several files can be omitted
   (with the `--exclude` flag).
 * On the server link the uploaded dir with the new release dir.
@@ -102,9 +107,9 @@ At the moment the deploy-script does several curl calls to check whether the
 service is up and running again.
 
 Note: When the server is restarted, the webapp needs to be compiled again. Even though
-the server rerturns HTTP code 200, the output actually is "temporarily unavailable".
+the server returns HTTP code 200, the output actually is "temporarily unavailable".
 In the console output (in this setup simply do a `tail -f ~/nohup.out.XX`) you can
-observe any progrss and possible errors if something doesn't work.
+observe any progress and possible errors if something doesn't work.
 
 Adjustments to the script need to be done for all vaiables that are in capital letters. This can be done by using a config file that is passed to the deploy script.
 The file `dev.config.skeleton` contains all possible settings that are possible at the moment. If some of these assumtions do not meet your infrastructure and cannot
@@ -120,8 +125,8 @@ Although mostly automated, the deployment process does not aways run smoothly fr
 
 #### Server does not come up
 
-After the deployment the npm process is killed and the service is then started again. This takes a while
-and the deploy script checks several times for a 200 response. If that does not work, the service hungs because of some error.
+After the deployment, the npm process is killed and the service is started again. This takes a while
+and the deploy script checks several times for a 200 response. If that does not work, the npm service probably hungs because of some error.
 
 ```
 Try to reach https://oer.example.org ... failed with response 502
@@ -164,14 +169,14 @@ Note: since MoodleNet 4.1 with Node 20 the webapp builds without any problem, th
 
 When you develop locally and use the watch process from the webapp, the webapp is build immediately.
 
-Basically before deploying the latest changes from the webapp make sure that these changes are visible
+Basically, before deploying the latest changes from the webapp make sure that these changes are visible
 when you call http://localhost:8080. This is the backend service containing the latest webapp.
 When the changes are not visible, the webapp has to be rebuilt.
 
 1. Check that in the `default.config.json` the build of the webapp is enabled. The keys `pkgs.@moodlenet/react-app.noWebappBuilder` and
 `pkgs.@moodlenet/react-app.noWebappServer` should be set to *false*.
 1. Manipulate the last build entry in the database and set the hash
-key and last built date so something else. The Arango DB can be reached
+key and last built date to something else. The Arango DB can be reached
 via the browser at http://localhost:8529/_db/moodlenet__react-app/_admin/aardvark/index.html#collection/Moodlenet_simple_key_value_store/build-info%3A%3A and looks like this: ![Arango DB last build information](mnet_last_built.png)
 Change the red framed values and hit save at the bottom (not in screenshot).
 Then call once again http://localhost:8080

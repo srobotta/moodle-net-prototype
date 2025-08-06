@@ -54,7 +54,7 @@ running containers.
 
 ### MoodleNet Code
 
-Before starting here, make sure that you have node.js in version **16** running.
+Before starting here, make sure that you have node.js in version **20** running.
 
 Somewhere on your machine checkout the
 [MoodleNet project](https://github.com/moodle/moodlenet) via git:

@@ -58,9 +58,9 @@ After you have done the setup to pull the new image, the following steps can be 
 
 1. Stop the containers `docker-compose down`
 1. Remove the arangodb image  `docker image list | grep arangodb | awk '{print $3}' | xargs docker rmi`
-1. Restart the docker images `docker compose up -d` which will pull the new arangodb image
-   However, it will probably not come up because the database files are older than the binary.
-   Check this out with `docker ps` and you probably see the nginx and letsencrypt containers running.
+1. Restart the docker images `docker compose up -d` which will pull the new arangodb image.
+   However, it will probably not come up because the database files are older can cannot be used with the new binary.
+   Check this out with `docker ps` and you probably see the nginx and letsencrypt containers running only.
 1. Run the db upgrade process `docker-compose run --rm arangodb arangod --database.auto-upgrade`.
    Look at the output, this should upgrade your db files and also start the container successfully.
 1. Restart MoodleNet (e.g. with the `service.sh` script)
@@ -73,10 +73,10 @@ database you can see the version number, that should be different from before.
 
 ### Database dump
 
-To dump the complete database content from your Aragno DB, you may do the following:
+To dump the complete database content from your Arango DB, you may do the following:
 
 ```
-docker exec  mn-arangodb sh -c 'rm -rf /dump && arangodump --all-databases'
+docker exec mn-arangodb sh -c 'rm -rf /dump && arangodump --all-databases'
 t=arango-dump-$(date +%Y-%m-%d-%H-%M); docker cp mn-arangodb:/dump $t
 ```
 
@@ -108,13 +108,10 @@ Note: the restore with a root password works like the dump command.
 
 When a backup is created all relevant files are inside the `dump` directory. This
 directory must be copied from your backup dir into the docker container in the
-root directory. First the possibly previously created dump directory is deleted.
+root directory. At first, the possibly previously created dump directory is deleted.
 In the next step the dumped data is copied inside the container into `/dump`.
-Form there the `arangorestore` tool reads the data and writes it into the
+From there the `arangorestore` tool reads the data and writes it into the
 database.
-
-Note: in the backup and restore process no passwords are used, I did this
-for the dev system only.
 
 ## Nginx
 
@@ -153,7 +150,7 @@ To rebuild just the nginx container do the following:
 
 ```
 docker compose down nginx
-docker compose up -d --build  nginx
+docker compose up -d --build nginx
 ```
 
 The first command stops the container. The second command rebuilds the container and then starts
