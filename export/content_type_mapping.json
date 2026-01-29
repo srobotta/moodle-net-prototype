@@ -1,0 +1,48 @@
+{
+    "assessment": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/assessment",
+    "concept-map": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/map",
+    "course": {
+        "suffix": {
+            "mbz": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/course",
+            "h5p": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/educational_game",
+            "default": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/course"
+        }
+    },
+    "curriculum": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/other",
+    "data-set": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/data",
+    "experiment": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/experiment",
+    "game": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/educational_game",
+    "glossary": "Glossary",
+    "graph": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/diagram",
+    "guides-and-tutorials": {
+        "suffix": {
+            "mp3": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/audio",
+            "wav": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/audio",
+            "avi": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/video",
+            "mov": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/video",
+            "mp4": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/video",
+            "default": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/worksheet"
+        }
+    },
+    "interactive-learning-object": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/drill_and_practice",
+    "map": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/map",
+    "online-courses-site": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/portal",
+    "project": "",
+    "questionnaire": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/questionnaire",
+    "reading": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/audio",
+    "references": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/index",
+    "report": {
+        "suffix": {
+            "html": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/web_page",
+            "ods": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/worksheet",
+            "docx": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/text",
+            "xlsx": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/worksheet",
+            "pdf": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/text",
+            "pptx": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/slide",
+            "default": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/text"
+        }
+    },
+    "repository": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/index",
+    "simulation": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/simulation",
+    "unit-of-study": "https://w3id.org/edu-sharing/vocabs/switch/hcrt/lesson_plan"
+}

@@ -26,6 +26,7 @@ Arguments:
   --port <port>           : Port of the database (default: 8529)
   -t | --token <token>    : Access token of the database if no user password is used
   -u | --username <user>  : Username of the database (overrides config file)
+  -U | --university <str> : University string for Switch OER export (in field originUniversity)
 
 Usage examples:
   python3 export.py -c moodlenet_config.json -l -o resources_list.csv
@@ -35,6 +36,7 @@ Usage examples:
   python3 export.py -H localhost -u root -p -l
   python3 export.py -H localhost -u root -p -e -o resources_export.csv
   python3 export.py -u moodlenet --password 'secret' -j -i resourceid1,resourceid2
+  python3 export.py -c moodlenet_config.json -U "Example University" -e -o resources_export.csv
 
 """
 
@@ -97,9 +99,11 @@ def getParserArgs():
     parser.add_argument('-t', '--token', type=str, help='Access token of the database if no user password is used')
     parser.add_argument('-i', '--id', type=str, help='ID of the resource to export')
     parser.add_argument('-l', '--list', action='store_true', help='List resource IDs and title')
+    parser.add_argument('--list-types', action='store_true', help='List only resource content types')
     parser.add_argument('-o', '--outfile', type=str, help='Output CSV file')
     parser.add_argument('-e', '--export', action='store_true', help='Export resources in Switch OER CSV format')
     parser.add_argument('-j', '--json', action='store_true', help='Export resources in JSON format, only in combination with -i')
+    parser.add_argument('-U', '--university', type=str, help='University string for Switch OER export (in field originUniversity)')
     return parser.parse_args()
 
 def getDb(args):
@@ -161,6 +165,24 @@ def main():
         delimiter = ' '
         quotes = ''
     if args.list:
+        if args.list_types:
+            contentTypes = {}
+            for resKey in db.getResourcesList():
+                mnetResource = getMnetResource(db, resKey)
+                if mnetResource and mnetResource.type:
+                    if mnetResource.type not in contentTypes:
+                        contentTypes[mnetResource.type] = []
+                    contentTypes[mnetResource.type].append([
+                        resKey,
+                        mnetResource.content['type'],
+                        mnetResource.content['name'] if mnetResource.content['type'] != '__link__' else mnetResource.content['url']
+                    ])
+            for ctype in sorted(contentTypes):
+                print('Content type: {}'.format(ctype))
+                for item in contentTypes[ctype]:
+                    print('  {} {}\t{}'.format(item[0], item[1], item[2]))
+            return
+
         if not args.outfile:
             resource_cnt = db.getResourceCnt()
             print("Total number of resources: {}".format(resource_cnt))
@@ -185,10 +207,13 @@ def main():
         resources = args.id.split(',') if args.id else list(db.getResourcesList())
         with openOutput(fileOutName) as fout:
             switchOerResource = SwitchOerResource()
+            switchOerResource.setOriginUniversity(args.university if args.university else '')
             # Write CSV header
             print(switchOerResource.getCsvHeader(), file=fout)
             for resKey in resources:
                 mnetResource = getMnetResource(db, resKey)
+                if mnetResource.published is False:
+                    continue
                 switchOerResource.setMoodleNetResource(mnetResource)
                 print(switchOerResource.toCsv(), file=fout)
 
