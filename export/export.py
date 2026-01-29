@@ -48,7 +48,6 @@ import argparse
 import sys
 import contextlib
 
-
 @contextlib.contextmanager
 def openOutput(filename = None):
     if filename and filename != '-':
@@ -83,6 +82,18 @@ def getCredentialsFromConfig(file: str):
         cfg['password'] = ''
     return cfg
 
+def getInstanceDomain(args) -> str:
+    if args.instance:
+        return args.instance
+    if args.config:
+        with open(args.config, 'r') as fin:
+            data = json.load(fin)
+        try:
+            return data['pkgs']['@moodlenet/core']['instanceDomain']
+        except KeyError:
+            return 'http://localhost'
+    return 'http://localhost'
+
 def getParserArgs():
     parser = argparse.ArgumentParser(
                         prog = 'export.py',
@@ -98,6 +109,7 @@ def getParserArgs():
     parser.add_argument('--port', type=int, help='Port of the dasabse (default: 8529)')
     parser.add_argument('-t', '--token', type=str, help='Access token of the database if no user password is used')
     parser.add_argument('-i', '--id', type=str, help='ID of the resource to export')
+    parser.add_argument('--instance', type=str, help='Instance domain of MoodleNet (overrides config file)')
     parser.add_argument('-l', '--list', action='store_true', help='List resource IDs and title')
     parser.add_argument('--list-types', action='store_true', help='List only resource content types')
     parser.add_argument('-o', '--outfile', type=str, help='Output CSV file')
@@ -138,13 +150,13 @@ def getDb(args):
 
     return MoodleNetDb(dbhost, dbuser, dbpass, dbtoken)
 
-def getMnetResource(db: MoodleNetDb, key: str) -> MoodleNetResource:
+def getMnetResource(db: MoodleNetDb, key: str, instanceDomain: str) -> MoodleNetResource:
     resource = db.getResource(key)
     if resource:
-        mnetResource = MoodleNetResource(resource)
+        mnetResource = MoodleNetResource(instanceDomain, resource)
         creatorDoc = db.getWebuser(mnetResource.meta['creator'].get('entityIdentifier').get('_key', ''))
         if creatorDoc:
-            creator = MoodleNetUser(creatorDoc)
+            creator = MoodleNetUser(instanceDomain, creatorDoc)
             mnetResource.setCreator(creator)
         return mnetResource
     else:
@@ -156,6 +168,7 @@ def main():
         print(__doc__)
         sys.exit(0)
     db = getDb(args)
+    instanceDomain = getInstanceDomain(args)
     if args.outfile:
         fileOutName = args.outfile
         delimiter = ';'
@@ -168,7 +181,7 @@ def main():
         if args.list_types:
             contentTypes = {}
             for resKey in db.getResourcesList():
-                mnetResource = getMnetResource(db, resKey)
+                mnetResource = getMnetResource(db, resKey, instanceDomain)
                 if mnetResource and mnetResource.type:
                     if mnetResource.type not in contentTypes:
                         contentTypes[mnetResource.type] = []
@@ -190,14 +203,14 @@ def main():
         with openOutput(fileOutName) as fout:
             print('ResourceID{}Title'.format(delimiter), file=fout)
             for resKey in resources:
-                mnetResource = getMnetResource(db, resKey)
+                mnetResource = getMnetResource(db, resKey, instanceDomain)
                 print('{key}{delimiter}{quotes}{title}{quotes}{delimiter}'.format(
                     key=resKey, delimiter=delimiter, quotes=quotes, title=mnetResource.title.replace(quotes, quotes*2)
                 ), file=fout)
 
     elif args.json:
         for key in args.id.split(','):
-            mnetResource = getMnetResource(db, key)
+            mnetResource = getMnetResource(db, key, instanceDomain)
             if mnetResource:
                 print(mnetResource)
             else:
@@ -211,7 +224,7 @@ def main():
             # Write CSV header
             print(switchOerResource.getCsvHeader(), file=fout)
             for resKey in resources:
-                mnetResource = getMnetResource(db, resKey)
+                mnetResource = getMnetResource(db, resKey, instanceDomain)
                 if mnetResource.published is False:
                     continue
                 switchOerResource.setMoodleNetResource(mnetResource)

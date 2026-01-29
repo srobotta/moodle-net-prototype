@@ -3,13 +3,14 @@ import re
 from slugify import slugify
 
 class MoodleNetEntity:
-    _wwwroot = 'https://oer.virtuelleakademie.ch'
+    _wwwroot = ''
     _webpath = ''
     _id = ''
     _key = ''
     _rev = ''
 
-    def __init__(self, document: dict):
+    def __init__(self, instanceDomain: str, document: dict):
+        self._wwwroot = instanceDomain if instanceDomain.startswith('http') else 'https://' + instanceDomain
         self._id = document.get('_id', '')
         self._key = document.get('_key', '')
         self._rev = document.get('_rev', '')
@@ -44,8 +45,8 @@ class MoodleNetResource(MoodleNetEntity):
     }
     link = ''
 
-    def __init__(self, document: dict):
-        super().__init__(document)
+    def __init__(self, instanceDomain: str, document: dict):
+        super().__init__(instanceDomain, document)
         self.description = document.get('description', '')
         self.title = document.get('title', '')
         self.link = self._wwwroot + '/resource/' + self._key + '/' + self._slug()
@@ -100,8 +101,8 @@ class MoodleNetUser(MoodleNetEntity):
     name = ''
     slug = ''
     avatar = None
-    def __init__(self, document: dict):
-        super().__init__(document)
+    def __init__(self, instanceDomain: str, document: dict):
+        super().__init__(instanceDomain, document)
         self.name = document.get('displayName', '')
         self.slug = document.get('webslug', '')
         avatar = document.get('avatarImage', None)
