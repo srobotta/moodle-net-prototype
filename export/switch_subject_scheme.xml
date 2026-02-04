@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<valuespaces>
+    <valuespace property="ccm:taxonid">
+        <key>languages_and_literature</key>
+
+        <key parent="languages_and_literature">linguistics</key>
+        <key parent="languages_and_literature">applied_linguistics</key>
+        <key parent="languages_and_literature">german_language_and_literature</key>
+        <key parent="languages_and_literature">french_language_and_literature</key>
+        <key parent="languages_and_literature">italian_language_and_literature</key>
+        <key parent="languages_and_literature">rhaeto_romanic_language_and_literature</key>
+        <key parent="languages_and_literature">english_language_and_literature</key>
+        <key parent="languages_and_literature">other_modern_european_languages</key>
+        <key parent="languages_and_literature">classical_european_languages</key>
+        <key parent="languages_and_literature">other_non_european_languages</key>
+        <key parent="languages_and_literature">interpreting_and_translation</key>
+        <key parent="languages_and_literature">interdisciplinary_languages_and_literature_other</key>
+
+        <key>history_and_cultural_sciences</key>
+
+        <key parent="history_and_cultural_sciences">philosophy</key>
+        <key parent="history_and_cultural_sciences">archaeology_and_prehistory</key>
+        <key parent="history_and_cultural_sciences">history_geschichte</key>
+        <key parent="history_and_cultural_sciences">ethnology_and_cultural_anthropology</key>
+        <key parent="history_and_cultural_sciences">interdisciplinary_history_and_cultural_sciences_other</key>
+
+        <key>education_and_teacher_education</key>
+
+        <key parent="education_and_teacher_education">education_studies</key>
+        <key parent="education_and_teacher_education">pre_primary_and_primary</key>
+        <key parent="education_and_teacher_education">lower_secondary</key>
+        <key parent="education_and_teacher_education">lower_and_upper_secondary_together</key>
+        <key parent="education_and_teacher_education">upper_secondary_baccalaurate_schools</key>
+        <key parent="education_and_teacher_education">upper_secondary_vocationalprofessional_education</key>
+        <key parent="education_and_teacher_education">general_vocational_and_professional_education</key>
+        <key parent="education_and_teacher_education">speech_therapy</key>
+        <key parent="education_and_teacher_education">psychomotor_education</key>
+        <key parent="education_and_teacher_education">special_special_needs_education</key>
+        <key parent="education_and_teacher_education">subject_specific_didactics</key>
+        <key parent="education_and_teacher_education">general_teacher_education</key>
+        <key parent="education_and_teacher_education">interdisciplinary_teacher_educationother</key>
+
+        <key>music_theatre_arts_and_design</key>
+
+        <key parent="music_theatre_arts_and_design">fine_arts</key>
+        <key parent="music_theatre_arts_and_design">design</key>
+        <key parent="music_theatre_arts_and_design">art_and_design_communication</key>
+        <key parent="music_theatre_arts_and_design">other_arts,_general</key>
+        <key parent="music_theatre_arts_and_design">history_of_art</key>
+        <key parent="music_theatre_arts_and_design">literary_writing</key>
+        <key parent="music_theatre_arts_and_design">transdisciplinarity</key>
+        <key parent="music_theatre_arts_and_design">music</key>
+        <key parent="music_theatre_arts_and_design">composition_and_theory</key>
+        <key parent="music_theatre_arts_and_design">music_pedagogy</key>
+        <key parent="music_theatre_arts_and_design">music_studies</key>
+        <key parent="music_theatre_arts_and_design">contemporary_dance</key>
+        <key parent="music_theatre_arts_and_design">theatre_and_film</key>
+        <key parent="music_theatre_arts_and_design">theatre_and_film_studies</key>
+        <key parent="music_theatre_arts_and_design">conservation</key>
+        <key parent="music_theatre_arts_and_design">music_theatre_arts_and_designother</key>
+
+        <key>theology</key>
+
+        <key parent="theology">protestant_theology</key>
+        <key parent="theology">roman_catholic_theology</key>
+        <key parent="theology">christian_catholic_theology</key>
+        <key parent="theology">interdisciplinary_theologyother</key>
+
+        <key>social_sciences</key>
+
+        <key parent="social_sciences">psychology</key>
+        <key parent="social_sciences">applied_psychology</key>
+        <key parent="social_sciences">sociology</key>
+        <key parent="social_sciences">social_work</key>
+        <key parent="social_sciences">human_geography</key>
+        <key parent="social_sciences">political_sciences</key>
+        <key parent="social_sciences">communications_and_mass_media</key>
+        <key parent="social_sciences">interdisciplinary_social_sciencesother</key>
+
+        <key>business_services_law_and_economics</key>
+
+        <key parent="business_services_law_and_economics">political_economy_economics</key>
+        <key parent="business_services_law_and_economics">business_administration</key>
+        <key parent="business_services_law_and_economics">business_informatics</key>
+        <key parent="business_services_law_and_economics">international_business_management</key>
+        <key parent="business_services_law_and_economics">facility_management</key>
+        <key parent="business_services_law_and_economics">hospitality_management</key>
+        <key parent="business_services_law_and_economics">tourism</key>
+        <key parent="business_services_law_and_economics">information_science</key>
+        <key parent="business_services_law_and_economics">business_communication</key>
+        <key parent="business_services_law_and_economics">banking_and_finance</key>
+        <key parent="business_services_law_and_economics">business_information_systems</key>
+        <key parent="business_services_law_and_economics">international_management</key>
+        <key parent="business_services_law_and_economics">law</key>
+        <key parent="business_services_law_and_economics">interdisciplinary_business_services_law_and_economicsother</key>
+
+        <key>mathematics_computer_sciences_and_it</key>
+
+        <key parent="mathematics_computer_sciences_and_it">mathematics</key>
+        <key parent="mathematics_computer_sciences_and_it">computer_science</key>
+        <key parent="mathematics_computer_sciences_and_it">telecommunications</key>
+        <key parent="mathematics_computer_sciences_and_it">itinformation_technology</key>
+        <key parent="mathematics_computer_sciences_and_it">medical_informatics</key>
+        <key parent="mathematics_computer_sciences_and_it">interdisciplinary_mathematics_computer_sciences_and_information_technologyother</key>
+
+        <key>natural_sciences_and_life_sciences</key>
+
+        <key parent="natural_sciences_and_life_sciences">astronomy</key>
+        <key parent="natural_sciences_and_life_sciences">physics</key>
+        <key parent="natural_sciences_and_life_sciences">biology</key>
+        <key parent="natural_sciences_and_life_sciences">biotechnology</key>
+        <key parent="natural_sciences_and_life_sciences">food_technology</key>
+        <key parent="natural_sciences_and_life_sciences">life_technologies</key>
+        <key parent="natural_sciences_and_life_sciences">chemistry</key>
+        <key parent="natural_sciences_and_life_sciences">oenology</key>
+        <key parent="natural_sciences_and_life_sciences">environmental_engineering</key>
+        <key parent="natural_sciences_and_life_sciences">molecular_life_sciences</key>
+        <key parent="natural_sciences_and_life_sciences">life_science_technologies</key>
+        <key parent="natural_sciences_and_life_sciences">life_sciences</key>
+        <key parent="natural_sciences_and_life_sciences">earth_sciences</key>
+        <key parent="natural_sciences_and_life_sciences">geography</key>
+        <key parent="natural_sciences_and_life_sciences">interdisciplinary_natural_sciences_and_life_sciencesother</key>
+
+        <key>medicine_health_and_pharmacy</key>
+
+        <key parent="medicine_health_and_pharmacy">human_medicine</key>
+        <key parent="medicine_health_and_pharmacy">dentistry</key>
+        <key parent="medicine_health_and_pharmacy">nursing</key>
+        <key parent="medicine_health_and_pharmacy">midwifery</key>
+        <key parent="medicine_health_and_pharmacy">physiotherapy</key>
+        <key parent="medicine_health_and_pharmacy">occupational_therapy</key>
+        <key parent="medicine_health_and_pharmacy">nutrition_and_dietetics</key>
+        <key parent="medicine_health_and_pharmacy">osteopathy</key>
+        <key parent="medicine_health_and_pharmacy">medical_radiology</key>
+        <key parent="medicine_health_and_pharmacy">veterinary_medicine</key>
+        <key parent="medicine_health_and_pharmacy">pharmacy</key>
+        <key parent="medicine_health_and_pharmacy">interdisciplinary_medicine_health_and_pharmacyother</key>
+
+        <key>agricultural_science_and_forestry</key>
+
+        <key parent="agricultural_science_and_forestry">forestry</key>
+        <key parent="agricultural_science_and_forestry">agricultural_science_agronomy</key>
+        <key parent="agricultural_science_and_forestry">food_science_lebensmittelwissenschaften</key>
+        <key parent="agricultural_science_and_forestry">interdisciplinary_agricultural_science_and_forestryother</key>
+
+        <key>architecture_construction_and_planning</key>
+
+        <key parent="architecture_construction_and_planning">civil_engineering</key>
+        <key parent="architecture_construction_and_planning">architecture</key>
+        <key parent="architecture_construction_and_planning">spatial_planning</key>
+        <key parent="architecture_construction_and_planning">landscape_architecture</key>
+        <key parent="architecture_construction_and_planning">geomatics</key>
+        <key parent="architecture_construction_and_planning">wood_engineering</key>
+        <key parent="architecture_construction_and_planning">engineering_construction_and_planning</key>
+        <key parent="architecture_construction_and_planning">construction_geomatics_and_spatial_development</key>
+        <key parent="architecture_construction_and_planning">rural_engineering_and_surveying</key>
+        <key parent="architecture_construction_and_planning">interdisciplinary_architecture_construction_and_planningother</key>
+
+        <key>mechanical_and_electrical_engineering</key>
+
+        <key parent="mechanical_and_electrical_engineering">microtechnology</key>
+        <key parent="mechanical_and_electrical_engineering">electrical_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">communication_systems</key>
+        <key parent="mechanical_and_electrical_engineering">mechanical_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">materials_science</key>
+        <key parent="mechanical_and_electrical_engineering">management_and_manufacturing_sciences</key>
+        <key parent="mechanical_and_electrical_engineering">energy_and_environmental_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">systems_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">technical_project_management_in_mechatronics</key>
+        <key parent="mechanical_and_electrical_engineering">automotive_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">engineering_and_management</key>
+        <key parent="mechanical_and_electrical_engineering">media_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">energy_and_building_technology</key>
+        <key parent="mechanical_and_electrical_engineering">industrial_design_engineering</key>
+        <key parent="mechanical_and_electrical_engineering">aviation</key>
+        <key parent="mechanical_and_electrical_engineering">optometry</key>
+        <key parent="mechanical_and_electrical_engineering">engineering_technology_and_it</key>
+        <key parent="mechanical_and_electrical_engineering">transportation_systems</key>
+        <key parent="mechanical_and_electrical_engineering">interdisciplinary_engineeringother</key>
+
+        <key>interdisciplinary_and_other</key>
+
+        <key parent="interdisciplinary_and_other">ecology</key>
+        <key parent="interdisciplinary_and_other">sport</key>
+        <key parent="interdisciplinary_and_other">military_science</key>
+        <key parent="interdisciplinary_and_other">gender_studies</key>
+
+    </valuespace>
+</valuespaces>

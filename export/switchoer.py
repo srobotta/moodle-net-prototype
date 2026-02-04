@@ -9,6 +9,7 @@ class SwitchOerResource():
     _quotes = '"'
     _originUniversity = ''
     _resourceTypeMapping = None
+    _subjectTypeMapping = None
     # all fields according to https://docs.edu-sharing.com/de/edu-sharing-documentation/9.1/bulkimport-excel
     fields = [
         'catalog',
@@ -80,6 +81,7 @@ class SwitchOerResource():
         self.datestamp = mnetResource.meta['created'][:10] if 'created' in mnetResource.meta else ''
         self.originUniversity = self._originUniversity
         self.educationalLearningResourceType = self.mapRessourceType(mnetResource)
+        self.taxonId = self.mapSubjectType(mnetResource)
 
     def getCsvHeader(self) -> str:
         """
@@ -144,3 +146,20 @@ class SwitchOerResource():
         suffix = name.split('.')[-1].lower() if name and '.' in name else ''
         mnetType = subTypes[suffix] if suffix in subTypes else subTypes['default']
         return mnetType
+    
+    def mapSubjectType(self, mnetResource: MoodleNetResource) -> str:
+        """
+        Map the MoodleNet subject type to a Switch OER subject category.
+        
+        :param mnetResource: MoodleNetResource instance
+        :type mnetResource: MoodleNetResource
+        :return: Subject category
+        :rtype: str
+        """
+        # Load mapping only once
+        if self._subjectTypeMapping is None:
+            self._subjectTypeMapping = json.loads(open(os.path.dirname(__file__) + '/subject_type_mapping.json', 'r').read())
+        
+        if mnetResource.subject in self._subjectTypeMapping:
+            return self._subjectTypeMapping[mnetResource.subject]
+        return 'interdisciplinary_and_other'
