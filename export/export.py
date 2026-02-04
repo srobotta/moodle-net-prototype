@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 """
-Export MoodleNet resources in Switch OER CSV format or JSON
+Export MoodleNet resources in Switch OER CSV format, simple XML or JSON
 
 This script reads from a MoodleNet ArangoDB database all resources and
 exports them in Switch OER CSV format or as a custom JSON.
@@ -15,7 +15,7 @@ Requirements:
 
 Arguments:
   -c | --config <file>    : Configuration file of MoodleNet for DB credentials
-  -e | --export           : Export resources in Switch OER CSV format
+  -e | --export <format>  : Export resources in specified format (e.g., xml, switch-oer)
   -H | --host <hostname>  : Host of the database (overrides config file)
   -i | --id <id1,id2,...> : ID(s) of the resource(s) to export (comma separated)
   -j | --json             : Export resources in JSON format, only in combination with -i
@@ -30,19 +30,20 @@ Arguments:
 
 Usage examples:
   python3 export.py -c moodlenet_config.json -l -o resources_list.csv
-  python3 export.py -c moodlenet_config.json -e -o resources_export.csv
-  python3 export.py -c moodlenet_config.json -e -i resourceid1,resourceid2 -o resources_export.csv
+  python3 export.py -c moodlenet_config.json -e xml -o resources_export.xml
+  python3 export.py -c moodlenet_config.json -e switch-oer -i resourceid1,resourceid2 -o resources_export.csv
   python3 export.py -c moodlenet_config.json -j -i resourceid1
   python3 export.py -H localhost -u root -p -l
-  python3 export.py -H localhost -u root -p -e -o resources_export.csv
+  python3 export.py -H localhost -u root -p -e switch-oer -o resources_export.csv
   python3 export.py -u moodlenet --password 'secret' -j -i resourceid1,resourceid2
-  python3 export.py -c moodlenet_config.json -U "Example University" -e -o resources_export.csv
+  python3 export.py -c moodlenet_config.json -U "Example University" -e switch-oer -o resources_export.csv
 
 """
 
 from db import MoodleNetDb
 from switchoer import SwitchOerResource
 from moodlenet import MoodleNetResource, MoodleNetUser
+import importlib
 import json
 import argparse
 import sys
@@ -113,7 +114,7 @@ def getParserArgs():
     parser.add_argument('-l', '--list', action='store_true', help='List resource IDs and title')
     parser.add_argument('--list-types', action='store_true', help='List only resource content types')
     parser.add_argument('-o', '--outfile', type=str, help='Output CSV file')
-    parser.add_argument('-e', '--export', action='store_true', help='Export resources in Switch OER CSV format')
+    parser.add_argument('-e', '--export', type=str, help='Export resources in specified format (e.g., switch-oer, xml)')
     parser.add_argument('-j', '--json', action='store_true', help='Export resources in JSON format, only in combination with -i')
     parser.add_argument('-U', '--university', type=str, help='University string for Switch OER export (in field originUniversity)')
     return parser.parse_args()
@@ -218,17 +219,27 @@ def main():
 
     elif args.export:
         resources = args.id.split(',') if args.id else list(db.getResourcesList())
+        # Dynamically load the export class based on the provided export format
+        exportFormat = args.export.lower()
+        moduleName = exportFormat.replace('-', '')
+        className = ''.join(word.capitalize() for word in exportFormat.split('-')) + 'Resource'
+        module = importlib.import_module(moduleName)
+        exportClass = getattr(module, className)
+    
         with openOutput(fileOutName) as fout:
-            switchOerResource = SwitchOerResource()
-            switchOerResource.setOriginUniversity(args.university if args.university else '')
-            # Write CSV header
-            print(switchOerResource.getCsvHeader(), file=fout)
+            instance = exportClass()
+            instance.setOriginUniversity(args.university if args.university else '')
+            # Write CSV header / XML root element / etc.
+            print(instance.getHeader(), file=fout)
             for resKey in resources:
                 mnetResource = getMnetResource(db, resKey, instanceDomain)
                 if mnetResource.published is False:
                     continue
-                switchOerResource.setMoodleNetResource(mnetResource)
-                print(switchOerResource.toCsv(), file=fout)
+                instance.setMoodleNetResource(mnetResource)
+                # Write CSV line / XML element / etc. for the resource
+                print(instance.getResourceString(), file=fout)
+            # XML closing root element / etc.
+            print(instance.getFooter(), file=fout)
 
 if __name__ == '__main__':
     main()

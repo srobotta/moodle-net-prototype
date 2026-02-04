@@ -51,16 +51,26 @@ class SwitchOerResource():
         'oeh_widgets'
     ]
 
-    def setOriginUniversity(self, university: str):
+    def setOriginUniversity(self, university: str) -> SwitchOerResource:
+        """
+        Set university string for field originUniversity.
+        
+        :param university: University name
+        :type university: str
+        :return: self for chaining
+        :rtype: SwitchOerResource
+        """
         self._originUniversity = university
         return self
 
-    def setMoodleNetResource(self, mnetResource: MoodleNetResource):
+    def setMoodleNetResource(self, mnetResource: MoodleNetResource) -> SwitchOerResource:
         """
         Set an instance of MoodleNetResource to populate the SwitchOerResource fields.
         
         :param mnetResource: MoodleNetResource instance
         :type mnetResource: MoodleNetResource
+        :return: self for chaining
+        :rtype: SwitchOerResource
         """
         for field in self.fields:
             setattr(self, field, '')
@@ -82,8 +92,9 @@ class SwitchOerResource():
         self.originUniversity = self._originUniversity
         self.educationalLearningResourceType = self.mapRessourceType(mnetResource)
         self.taxonId = self.mapSubjectType(mnetResource)
+        return self
 
-    def getCsvHeader(self) -> str:
+    def getHeader(self) -> str:
         """
         Returns the CSV header line string.
 
@@ -92,7 +103,7 @@ class SwitchOerResource():
         """
         return self._delimiter.join(key for key in self.fields)
 
-    def toCsv(self):
+    def getResourceString(self):
         """
         Returns a csv line string for the current resource, escaping fields as needed.
 
@@ -110,6 +121,15 @@ class SwitchOerResource():
                 else:
                     tuple[key] = str(value)
         return self._delimiter.join(tuple[key] for key in self.fields)
+    
+    def getFooter(self) -> str:
+        """
+        Returns the CSV footer line string, currently empty as no footer is needed.
+
+        return: CSV footer line
+        retype: str
+        """
+        return ''
     
     def mapRessourceType(self, mnetResource: MoodleNetResource) -> str:
         """
