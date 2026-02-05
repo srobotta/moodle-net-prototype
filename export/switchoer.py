@@ -76,10 +76,10 @@ class SwitchOerResource():
             setattr(self, field, '')
         self.description = mnetResource.description
         self.name = mnetResource.title
-        self.language = mnetResource.language[0:2].upper() if mnetResource.language else ''
+        self.language = mnetResource.language[0:2].lower() if mnetResource.language else ''
         self.contentUrl = mnetResource.content['url'] if mnetResource.content else ''
         self.thumbnailUrl = mnetResource.image if mnetResource.image else ''
-        self.licenseKey = mnetResource.license
+        self.licenseKey = mnetResource.license.replace('-', '_').upper()
         # We only have CC licenses with version 4.0 in MoodleNet
         if mnetResource.license.startswith('cc-'):
             self.licenseVersion = '4.0'
