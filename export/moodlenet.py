@@ -86,25 +86,33 @@ class MoodleNetResource(MoodleNetEntity):
             "updated": ""
         })
 
-    def setCreator(self, creator: MoodleNetUser):
-        self.meta['creator'] = {
-            "name": creator.name,
-            "slug": creator.slug,
-            "avatar": creator.avatar
-        }
+    def setCreator(self, creator: MoodleNetUser) -> MoodleNetResource:
+        self.meta['creator'] = dict()
+        for key, value in creator.__dict__().items():
+            self.meta['creator'][key] = value
+        return self
 
     def __str__(self):
         return json.dumps(self.__dict__, indent = 2)
 
 class MoodleNetUser(MoodleNetEntity):
     _webpath = '.pkg/@moodlenet/web-user/public'
+    id = ''
     name = ''
     slug = ''
+    about = ''
     avatar = None
+
     def __init__(self, instanceDomain: str, document: dict):
         super().__init__(instanceDomain, document)
         self.name = document.get('displayName', '')
+        self.about = document.get('aboutMe', '')
         self.slug = document.get('webslug', '')
+        self.id = self._key
         avatar = document.get('avatarImage', None)
         if avatar and avatar.get('kind') == 'file':
             self.avatar = self._getWebLink(avatar.get('directAccessId', ''))
+
+    def __dict__(self):
+        all_attrs = super().__dir__()
+        return {attr: getattr(self, attr) for attr in all_attrs if not attr.startswith("_")}
